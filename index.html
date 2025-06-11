@@ -1,65 +1,35 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Confirmation Bias Avatar</title>
+  <meta charset="UTF-8">
+  <title>Carla the Avatar</title>
   <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f8f8f8;
-      font-family: sans-serif;
-    }
-    #anamVideo {
-      width: 100%;
-      max-width: 720px;
-      height: auto;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    }
-    button {
-      margin-top: 20px;
-      padding: 12px 20px;
-      background-color: #2a65f3;
-      color: white;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #1749bd;
-    }
+    body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #000; color: white; }
+    #anamVideo { width: 100%; max-width: 800px; height: auto; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
   </style>
 </head>
 <body>
   <video id="anamVideo" autoplay muted playsinline></video>
   <audio id="anamAudio" autoplay></audio>
 
-  <button onclick="window.close()">Finish and return</button>
-
   <script src="https://unpkg.com/@anam-ai/js-sdk@2.0.0/dist/umd/anam.js"></script>
   <script>
     const { unsafe_createClientWithApiKey } = window.anam;
 
-    const anamClient = unsafe_createClientWithApiKey(
-      'MjIwMWYwYjItZjE4Ny00OThhLTk0YjItZjdkMGNiNGUwZGRhOjVhUW1DejFRVk5LWkRnWExiSVNEN21qNzFLcU9icVA1Q2hteHA3ZzN3SW89',
-      {
-        name: "Carla",
-        avatarId: "195d733e-58a9-40bb-a049-ac344fa70b7f",
-        voiceId: "04965b9e-ff4c-4b54-a4dc-fba6e458c760",
-        brainType: "ANAM_GPT_4O_MINI_V1",
-        systemPrompt: `... [your full prompt goes here as you had it] ...`,
-      }
-    );
+    // Use your own secure session token in production
+    const anamClient = unsafe_createClientWithApiKey('YOUR_API_KEY');
 
     anamClient.streamToVideoAndAudioElements('anamVideo', 'anamAudio');
+
     anamClient.addListener('VIDEO_PLAY_STARTED', () => {
-      anamClient.talk("Hello, I'm Carla. Let's reflect on how confirmation bias shows up in your work.");
+      anamClient.talk('Hello! I'm Carla, and I'm here to help you explore confirmation bias.');
+    });
+
+    anamClient.addListener('TALK_ENDED', async () => {
+      const feedback = await anamClient.ask('Please give me a short score and feedback summary.');
+
+      // Send message back to Storyline via postMessage
+      window.opener?.postMessage({ type: 'carlaFeedback', feedback }, '*');
     });
   </script>
 </body>
