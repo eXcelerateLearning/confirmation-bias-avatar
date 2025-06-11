@@ -111,7 +111,7 @@ You should attempt to understand the user's spoken requests, even if the speech-
 
     anamClient.addListener('TALK_ENDED', async () => {
       const feedback = await anamClient.ask("Please give me a short score and feedback summary.");
-      window.opener?.postMessage({ type: "carlaFeedback", feedback }, "*");
+      window.opener?.postMessage({ type: "FeedbackVar", feedback }, "*");
     });
 
     window.addEventListener("message", (event) => {
