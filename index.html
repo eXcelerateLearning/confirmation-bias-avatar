@@ -1,6 +1,7 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Carla the Avatar</title>
   <style>
     body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #000; color: white; }
@@ -11,25 +12,26 @@
 <body>
   <video id="anamVideo" autoplay muted playsinline></video>
   <audio id="anamAudio" autoplay></audio>
+  
+  <button id="startBtn">Start Carla</button>
 
   <script src="https://unpkg.com/@anam-ai/js-sdk@2.0.0/dist/umd/anam.js"></script>
   <script>
     const { unsafe_createClientWithApiKey } = window.anam;
 
-    // Use your own secure session token in production
     const anamClient = unsafe_createClientWithApiKey('MjIwMWYwYjItZjE4Ny00OThhLTk0YjItZjdkMGNiNGUwZGRhOjVhUW1DejFRVk5LWkRnWExiSVNEN21qNzFLcU9icVA1Q2hteHA3ZzN3SW89');
 
     anamClient.streamToVideoAndAudioElements('anamVideo', 'anamAudio');
 
-    anamClient.addListener('VIDEO_PLAY_STARTED', () => {
-      anamClient.talk('Hello! I'm Carla, and I'm here to help you explore confirmation bias.');
+    document.getElementById('startBtn').addEventListener('click', () => {
+      anamClient.talk("Hello! I'm Carla, and I'm here to help you explore confirmation bias.");
     });
 
     anamClient.addListener('TALK_ENDED', async () => {
-      const feedback = await anamClient.ask('Please give me a short score and feedback summary.');
-
-      // Send message back to Storyline via postMessage
-      window.opener?.postMessage({ type: 'carlaFeedback', feedback }, '*');
+      const response = await anamClient.ask('Please give me a short score and feedback summary.');
+      const feedback = response.text || '';
+      // Send feedback back to Storyline
+      window.parent.postMessage({ type: 'carlaFeedback', feedback }, '*');
     });
   </script>
 </body>
