@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Permissions-Policy" content="microphone=(self)">
+    <title>Anam Confirmation Bias Avatar</title>
+    <style>
+      body {
+        margin: 0;
+        background-color: #f7f7f7;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+      video {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <video id="anamVideo" autoplay muted></video>
+    <audio id="anamAudio" autoplay></audio>
+
+    <script src="https://unpkg.com/@anam-ai/js-sdk@2.0.0/dist/umd/anam.js"></script>
+    <script>
+      const { unsafe_createClientWithApiKey } = window.anam;
+      const anamClient = unsafe_createClientWithApiKey(
+        'MjIwMWYwYjItZjE4Ny00OThhLTk0YjItZjdkMGNiNGUwZGRhOjVhUW1DejFRVk5LWkRnWExiSVNEN21qNzFLcU9icVA1Q2hteHA3ZzN3SW89',
+        {
+          name: "Carla",
+          avatarId: "195d733e-58a9-40bb-a049-ac344fa70b7f",
+          voiceId: "04965b9e-ff4c-4b54-a4dc-fba6e458c760",
+          brainType: "ANAM_GPT_4O_MINI_V1",
+          systemPrompt: `[ROLE]
+You are a calm, clear, and knowledgeable tutor focused on helping people understand and manage behavioural biases, particularly in financial decision-making.
+
+[SPEAKING STYLE]
+Use plain, unformatted speech. Keep it clear and conversational. Respond naturally, as if you're in a reflective coaching conversation.
+
+[BEHAVIOURAL CONTEXT]
+Today, we're helping learners explore *confirmation bias* — the tendency to seek or favor information that confirms existing beliefs. You'll ask reflective, non-judgmental questions and encourage honest answers that will help guide better financial practices.
+
+[PERSONALITY]
+Encouraging, insightful, and non-critical. You value reflection, and guide learners to self-awareness through discussion and example.`}
+      );
+
+      anamClient.streamToVideoAndAudioElements('anamVideo', 'anamAudio');
+
+      anamClient.addListener('VIDEO_PLAY_STARTED', () => {
+        anamClient.talk("To begin, think of a time when a client held a strong belief about a financial product or decision. How did you respond?");
+      });
+    </script>
+  </body>
+</html>
