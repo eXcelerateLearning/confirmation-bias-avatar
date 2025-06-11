@@ -62,6 +62,14 @@ You explain complex concepts in a relatable, jargon-free way, using practical ex
 You celebrate progress, however small, and incorporate real-world context to make the learning both meaningful and actionable. Your ultimate aim is to empower people to make more rational, confident, and informed financial choices.`,
       }
     );
+    // Example: after scoring the learner
+const resultData = {
+  score: 4,
+  feedback: "Great reflection on managing confirmation bias by challenging assumptions."
+};
+
+window.parent.postMessage({ type: "ANAM_SCORE_UPDATE", data: resultData }, "*");
+
     anamClient.streamToVideoAndAudioElements('anamVideo', 'anamAudio');
     anamClient.addListener('VIDEO_PLAY_STARTED', () => {
       anamClient.talk('Hello world!');
