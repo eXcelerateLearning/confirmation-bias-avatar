@@ -46,23 +46,26 @@
       }
     }
 
-    #content {
-      opacity: 0;
-      animation: fadeIn 1s ease-in forwards;
-      animation-delay: 1.5s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 1;
-      width: 100%;
-      max-width: 800px;
-    }
+#content {
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
+  animation-delay: 1.5s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 890px;
+  height: 533.3px;
+}
 
-    video {
-      width: 100%;
-      border-radius: 12px;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
-    }
+video {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  box-shadow: none; /* No shadow until streaming */
+  background-color: #000; /* Prevent flash of white */
+  transition: box-shadow 0.5s ease;
+}
+
 
     @keyframes fadeIn {
       to {
@@ -153,9 +156,12 @@ You celebrate progress, however small, and incorporate real-world context to mak
 
     anamClient.streamToVideoAndAudioElements('anamVideo', 'anamAudio');
 
-    anamClient.addListener('VIDEO_PLAY_STARTED', () => {
-      anamClient.talk(`Hello ${learnerName}. I'm Carla, and I'm here to help you explore confirmation bias.`);
-    });
+anamClient.addListener('VIDEO_PLAY_STARTED', () => {
+  // Add shadow once video starts playing
+  document.getElementById('anamVideo').style.boxShadow = "0 12px 36px rgba(0, 0, 0, 0.5)";
+  
+  anamClient.talk(`Hello ${learnerName}. I'm Carla, and I'm here to help you explore confirmation bias.`);
+});
 
     anamClient.addListener('TALK_ENDED', async () => {
       const feedback = await anamClient.ask("Please give me a short score and feedback summary.");
