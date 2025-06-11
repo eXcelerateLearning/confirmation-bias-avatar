@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Carla the Avatar</title>
   <style>
-    body { margin: 0; background: #000; display: flex; align-items: center; justify-content: center; height: 100vh; }
-    #anamVideo { width: 100%; max-width: 800px; height: auto; }
+    body {
+      margin: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #anamVideo {
+      width: 100%;
+      max-width: 800px;
+      height: auto;
+    }
   </style>
 </head>
 <body>
@@ -22,19 +33,21 @@
       voiceId: "04965b9e-ff4c-4b54-a4dc-fba6e458c760",
       brainType: "ANAM_GPT_4O_MINI_V1",
       systemPrompt: `[ROLE]
-You are a helpful tutor... [SHORTENED HERE FOR SPACE]`
+You are a helpful, concise, and reliable tutor from England...
+(etc. — keep your original prompt here)` 
     });
 
+    // Start streaming
     anamClient.streamToVideoAndAudioElements('anamVideo', 'anamAudio');
 
+    // Trigger intro speech when video starts
     anamClient.addListener('VIDEO_PLAY_STARTED', () => {
-      anamClient.talk("Hello! I'm Carla, here to help you explore confirmation bias.");
+      anamClient.talk("Hello! I'm Carla, and I'm here to help you explore confirmation bias.");
     });
 
+    // When Carla finishes the session
     anamClient.addListener('TALK_ENDED', async () => {
-      const feedback = await anamClient.ask('Please give me a short score and feedback summary.');
-
-      // Send feedback back to parent window (Storyline)
+      const feedback = await anamClient.ask("Please give me a short score and feedback summary.");
       if (window.opener) {
         window.opener.postMessage({ type: 'carlaFeedback', feedback }, '*');
       }
@@ -42,4 +55,3 @@ You are a helpful tutor... [SHORTENED HERE FOR SPACE]`
   </script>
 </body>
 </html>
-
