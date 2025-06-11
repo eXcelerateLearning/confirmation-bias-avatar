@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Carla the Avatar</title>
+  <title>Reflecting on Confirmation Bias</title>
   <style>
     body {
       margin: 0;
@@ -49,7 +49,7 @@ You are a helpful, concise, and reliable tutor from England...
     anamClient.addListener('TALK_ENDED', async () => {
       const feedback = await anamClient.ask("Please give me a short score and feedback summary.");
       if (window.opener) {
-        window.opener.postMessage({ type: 'carlaFeedback', feedback }, '*');
+        window.opener.postMessage({ type: 'feedbackVar', feedback }, '*');
       }
     });
   </script>
