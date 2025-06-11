@@ -113,6 +113,15 @@ You should attempt to understand the user's spoken requests, even if the speech-
       const feedback = await anamClient.ask("Please give me a short score and feedback summary.");
       window.opener?.postMessage({ type: "carlaFeedback", feedback }, "*");
     });
+
+    window.addEventListener("message", (event) => {
+  if (event.data?.type === "launchData") {
+    const { learnerName, launchTime } = event.data;
+    console.log("Carla launched by:", learnerName, "at", launchTime);
+    // Optionally show a personalized greeting or log for reporting
+  }
+});
+
   </script>
 </body>
 </html>
