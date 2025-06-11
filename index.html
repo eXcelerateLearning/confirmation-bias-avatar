@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Carla – Confirmation Bias Reflection</title>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap" rel="stylesheet" />
   <style>
     body {
       margin: 0;
@@ -15,6 +15,7 @@
       justify-content: center;
       height: 100vh;
       overflow: hidden;
+      flex-direction: column;
     }
 
     #splash {
@@ -52,11 +53,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      z-index: 1;
+      width: 100%;
+      max-width: 800px;
     }
 
     video {
       width: 100%;
-      max-width: 800px;
       border-radius: 12px;
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
     }
@@ -75,20 +78,26 @@
     <h1>Loading Carla...</h1>
   </div>
 
-<script>
-  // Function to get query parameter value
-  function getQueryParam(param) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(param) || "Learner";
-  }
+  <!-- Main Content -->
+  <div id="content">
+    <video id="anamVideo" autoplay muted playsinline></video>
+    <audio id="anamAudio" autoplay></audio>
+  </div>
 
-  // Get the learner's name from the URL, or default to "Learner"
-  const learnerName = getQueryParam("learnerName");
+  <script src="https://unpkg.com/@anam-ai/js-sdk@2.0.0/dist/umd/anam.js"></script>
+  <script>
+    // Get query param or fallback
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param) || "Learner";
+    }
 
-  // Now initialize Anam client and use learnerName in talk()
-  const { unsafe_createClientWithApiKey } = window.anam;
+    const learnerName = getQueryParam("learnerName");
 
-  const anamClient = unsafe_createClientWithApiKey('MjIwMWYwYjItZjE4Ny00OThhLTk0YjItZjdkMGNiNGUwZGRhOjVhUW1DejFRVk5LWkRnWExiSVNEN21qNzFLcU9icVA1Q2hteHA3ZzN3SW89',
+    const { unsafe_createClientWithApiKey } = window.anam;
+
+    const anamClient = unsafe_createClientWithApiKey(
+      'MjIwMWYwYjItZjE4Ny00OThhLTk0YjItZjdkMGNiNGUwZGRhOjVhUW1DejFRVk5LWkRnWExiSVNEN21qNzFLcU9icVA1Q2hteHA3ZzN3SW89',
       {
         name: "Carla",
         avatarId: "195d733e-58a9-40bb-a049-ac344fa70b7f",
@@ -102,16 +111,15 @@ Always refer to the learner as ${learnerName} in your responses.
 
 [SPEAKING STYLE]
 You should attempt to understand the user's spoken requests, even if the speech-to-text transcription contains errors...
-(Truncated for clarity. Use full prompt in production.)
+(Truncated for brevity. Use your full prompt here.)
 `,
       }
     );
-    
 
     anamClient.streamToVideoAndAudioElements('anamVideo', 'anamAudio');
 
     anamClient.addListener('VIDEO_PLAY_STARTED', () => {
-      anamClient.talk("Hello${learnerName}. I'm Carla, and I'm here to help you explore confirmation bias.");
+      anamClient.talk(`Hello ${learnerName}. I'm Carla, and I'm here to help you explore confirmation bias.`);
     });
 
     anamClient.addListener('TALK_ENDED', async () => {
@@ -119,14 +127,13 @@ You should attempt to understand the user's spoken requests, even if the speech-
       window.opener?.postMessage({ type: "feedbackVar", feedback }, "*");
     });
 
+    // Listen for launch data from parent window (Storyline)
     window.addEventListener("message", (event) => {
-  if (event.data?.type === "launchData") {
-    const { learnerName, launchTime } = event.data;
-    console.log("Carla launched by:", learnerName, "at", launchTime);
-    // Optionally show a personalized greeting or log for reporting
-  }
-});
-
+      if (event.data?.type === "launchData") {
+        const { learnerName, launchTime } = event.data;
+        console.log("Carla launched by:", learnerName, "at", launchTime);
+      }
+    });
   </script>
 </body>
 </html>
