@@ -2,55 +2,116 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Reflecting on Confirmation Bias</title>
+  <title>Carla – Confirmation Bias Reflection</title>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      background: #000;
+      background-color: #001B71;
+      font-family: 'EB Garamond', serif;
+      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
       height: 100vh;
+      overflow: hidden;
     }
-    #anamVideo {
+
+    #splash {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #001B71;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      animation: fadeOut 1.5s ease-out forwards;
+      animation-delay: 1.5s;
+    }
+
+    #splash h1 {
+      font-size: 2rem;
+      font-weight: normal;
+      opacity: 0.9;
+      letter-spacing: 1px;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    #content {
+      opacity: 0;
+      animation: fadeIn 1s ease-in forwards;
+      animation-delay: 1.5s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    video {
       width: 100%;
       max-width: 800px;
-      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
     }
   </style>
 </head>
 <body>
-  <video id="anamVideo" autoplay muted playsinline></video>
-  <audio id="anamAudio" autoplay></audio>
 
+  <!-- Splash Screen -->
+  <div id="splash">
+    <h1>Loading Carla...</h1>
+  </div>
+
+  <!-- Main Content -->
+  <div id="content">
+    <video id="anamVideo" autoplay muted playsinline></video>
+    <audio id="anamAudio" autoplay></audio>
+  </div>
+
+  <!-- Anam SDK + Carla Setup -->
   <script src="https://unpkg.com/@anam-ai/js-sdk@2.0.0/dist/umd/anam.js"></script>
   <script>
     const { unsafe_createClientWithApiKey } = window.anam;
 
-    const anamClient = unsafe_createClientWithApiKey('MjIwMWYwYjItZjE4Ny00OThhLTk0YjItZjdkMGNiNGUwZGRhOjVhUW1DejFRVk5LWkRnWExiSVNEN21qNzFLcU9icVA1Q2hteHA3ZzN3SW89', {
-      name: "Carla",
-      avatarId: "195d733e-58a9-40bb-a049-ac344fa70b7f",
-      voiceId: "04965b9e-ff4c-4b54-a4dc-fba6e458c760",
-      brainType: "ANAM_GPT_4O_MINI_V1",
-      systemPrompt: `[ROLE]
-You are a helpful, concise, and reliable tutor from England...
-(etc. — keep your original prompt here)` 
-    });
+    const anamClient = unsafe_createClientWithApiKey(
+      'MjIwMWYwYjItZjE4Ny00OThhLTk0YjItZjdkMGNiNGUwZGRhOjVhUW1DejFRVk5LWkRnWExiSVNEN21qNzFLcU9icVA1Q2hteHA3ZzN3SW89',
+      {
+        name: "Carla",
+        avatarId: "195d733e-58a9-40bb-a049-ac344fa70b7f",
+        voiceId: "04965b9e-ff4c-4b54-a4dc-fba6e458c760",
+        brainType: "ANAM_GPT_4O_MINI_V1",
+        systemPrompt: `[ROLE]
+You are a helpful, concise, and reliable tutor from England. Please guide the learner to reflect on how confirmation bias may have affected client conversations, decisions, or their own communication style — and help them uncover ways to manage it more effectively.
 
-    // Start streaming
+[SPEAKING STYLE]
+You should attempt to understand the user's spoken requests, even if the speech-to-text transcription contains errors...
+(Truncated for clarity. Use full prompt in production.)
+`,
+      }
+    );
+
     anamClient.streamToVideoAndAudioElements('anamVideo', 'anamAudio');
 
-    // Trigger intro speech when video starts
     anamClient.addListener('VIDEO_PLAY_STARTED', () => {
-      anamClient.talk("Hello! I'm Carla, and I'm here to help you explore confirmation bias.");
+      anamClient.talk("Hello. I'm Carla, and I'm here to help you explore confirmation bias.");
     });
 
-    // When Carla finishes the session
     anamClient.addListener('TALK_ENDED', async () => {
       const feedback = await anamClient.ask("Please give me a short score and feedback summary.");
-      if (window.opener) {
-        window.opener.postMessage({ type: 'feedbackVar', feedback }, '*');
-      }
+      window.opener?.postMessage({ type: "carlaFeedback", feedback }, "*");
     });
   </script>
 </body>
