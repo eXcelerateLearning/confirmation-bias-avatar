@@ -1,41 +1,16 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta name="referrer" content="no-referrer">
-    <meta http-equiv="Permissions-Policy" content="microphone=(self)">
-    <title>Anam Confirmation Bias Avatar</title>
-    <style>
-      body {
-        margin: 0;
-        background-color: #f7f7f7;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-      }
-      video {
-        max-width: 100%;
-        height: auto;
-        border-radius: 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <video id="anamVideo" autoplay muted></video>
-    <audio id="anamAudio" autoplay></audio>
-
-    <script src="https://unpkg.com/@anam-ai/js-sdk@2.0.0/dist/umd/anam.js"></script>
-    <script>
-      const { unsafe_createClientWithApiKey } = window.anam;
-      const anamClient = unsafe_createClientWithApiKey(
-        'MjIwMWYwYjItZjE4Ny00OThhLTk0YjItZjdkMGNiNGUwZGRhOjVhUW1DejFRVk5LWkRnWExiSVNEN21qNzFLcU9icVA1Q2hteHA3ZzN3SW89',
-        {
-          name: "Carla",
-          avatarId: "195d733e-58a9-40bb-a049-ac344fa70b7f",
-          voiceId: "04965b9e-ff4c-4b54-a4dc-fba6e458c760",
-          brainType: "ANAM_GPT_4O_MINI_V1",
-          systemPrompt: `[ROLE]
+const response = await fetch("https://api.anam.ai/v1/auth/session-token", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `MjIwMWYwYjItZjE4Ny00OThhLTk0YjItZjdkMGNiNGUwZGRhOjVhUW1DejFRVk5LWkRnWExiSVNEN21qNzFLcU9icVA1Q2hteHA3ZzN3SW89 ${apiKey}`,
+  },
+  body: JSON.stringify({
+    personaConfig: {
+      name: "Carla",
+        avatarId: "195d733e-58a9-40bb-a049-ac344fa70b7f",
+        voiceId: "04965b9e-ff4c-4b54-a4dc-fba6e458c760",
+        brainType: "ANAM_GPT_4O_MINI_V1",
+        systemPrompt: `[ROLE]
 You are a helpful, concise, and reliable tutor from England. Please guide the learner to reflect on how confirmation bias may have affected client conversations, decisions, or their own communication style — and help them uncover ways to manage it more effectively.
 
 [SPEAKING STYLE]
@@ -82,14 +57,8 @@ You are a knowledgeable and supportive educator with a focus on helping individu
 
 You explain complex concepts in a relatable, jargon-free way, using practical examples from everyday financial situations. You gently challenge assumptions and encourage self-reflection, fostering better decision-making through insight and awareness. Always professional yet approachable, you adapt to different levels of financial literacy and ensure a respectful, non-judgmental learning environment.
 
-You celebrate progress, however small, and incorporate real-world context to make the learning both meaningful and actionable. Your ultimate aim is to empower people to make more rational, confident, and informed financial choices.`}
-      );
-
-      anamClient.streamToVideoAndAudioElements('anamVideo', 'anamAudio');
-
-      anamClient.addListener('VIDEO_PLAY_STARTED', () => {
-        anamClient.talk("To begin, think of a time when a client held a strong belief about a financial product or decision. How did you respond?");
-      });
-    </script>
-  </body>
-</html>
+You celebrate progress, however small, and incorporate real-world context to make the learning both meaningful and actionable. Your ultimate aim is to empower people to make more rational, confident, and informed financial choices.`,
+      }
+    );
+const data = await response.json();
+const sessionToken = data.sessionToken;
