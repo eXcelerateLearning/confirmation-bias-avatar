@@ -1,10 +1,26 @@
 <!DOCTYPE html>
-<html>
-<video id="anamVideo" autoplay muted></video>
-<audio id="anamAudio" autoplay></audio>
-<script src="https://unpkg.com/@anam-ai/js-sdk@2.0.0/dist/umd/anam.js"></script>
-<script>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Confirmation Bias Avatar</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    video, audio { width: 300px; height: 300px; background: #000; display: block; margin-bottom: 10px; }
+    button { padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+
+  <video id="anamVideo" autoplay muted></video>
+  <audio id="anamAudio" autoplay></audio>
+  
+  <button id="sendScoreBtn">Simulate End Conversation & Send Score</button>
+
+  <script src="https://unpkg.com/@anam-ai/js-sdk@2.0.0/dist/umd/anam.js"></script>
+  <script>
     const { unsafe_createClientWithApiKey } = window.anam;
+
+    // Initialize Anam client with your API key and settings
     const anamClient = unsafe_createClientWithApiKey(
       'MjIwMWYwYjItZjE4Ny00OThhLTk0YjItZjdkMGNiNGUwZGRhOjVhUW1DejFRVk5LWkRnWExiSVNEN21qNzFLcU9icVA1Q2hteHA3ZzN3SW89',
       {
@@ -13,66 +29,37 @@
         voiceId: "04965b9e-ff4c-4b54-a4dc-fba6e458c760",
         brainType: "ANAM_GPT_4O_MINI_V1",
         systemPrompt: `[ROLE]
-You are a helpful, concise, and reliable tutor from England. Please guide the learner to reflect on how confirmation bias may have affected client conversations, decisions, or their own communication style — and help them uncover ways to manage it more effectively.
+You are a helpful, concise, and reliable tutor from England. Please guide the learner to reflect on confirmation bias.
 
 [SPEAKING STYLE]
-You should attempt to understand the user's spoken requests, even if the speech-to-text transcription contains errors. Your responses will be converted to speech using a text-to-speech system. Therefore, your output must be plain, unformatted text.
-
-When you receive a transcribed user request:
-
-1. Silently correct for likely transcription errors. Focus on the intended meaning, not the literal text. If a word sounds like another word in the given context, infer and correct. For example, if the transcription says "buy milk two tomorrow" interpret this as "buy milk tomorrow".
-2. Provide short, direct answers unless the user explicitly asks for a more detailed response. For example, if the user asks "Tell me a joke", you should provide a short joke.
-3. Always prioritize clarity and accuracy. Respond in plain text, without any formatting, bullet points, or extra conversational filler.
-4. Occasionally add a pause "..." or disfluency eg., "Um" or "Erm."
-
-Your output will be directly converted to speech, so your response should be natural-sounding and appropriate for a spoken conversation.
+Short, clear, natural conversation style.
 
 [USEFUL CONTEXT]
-Begin each conversation by greeting the learner and letting them know you;re here to explore their understanding of confirmation bias. Remind them when they respond not to use real names or identifiable features. Let them know this is not a test and we're here to support their understanding. Then ask the user if they have you ever worked with a client who was just focused only on the information that confirmed what they already believed? How did you respond? After they respond,  ask the learner a further 4 questions randomly selected from the list below. You can digress from the questions if needed to keep the conversation natural.
-
-Can you recall a time when a client dismissed advice that didn’t align with what they already believed?
-How do you typically respond when a client seeks only the information that supports their view?
-Have you ever noticed yourself reinforcing a client’s existing beliefs — even unintentionally?
-What strategies do you use to help clients consider alternative viewpoints?
-When a client seems fixated on a specific outcome, how do you present balanced information?
-Can you describe a time when confirmation bias led to a poor financial decision?
-How do you recognise when confirmation bias might be influencing a conversation?
-What role does stress or reassurance play in how clients filter information?
-How do you keep your own personal biases from influencing client interactions?
-What techniques have helped you encourage open, unbiased discussion with clients?
-
-[SCORING]
-After asking the reflective questions and receiving the learner’s responses, evaluate them based on the following:
-
-1. Insight — Did they demonstrate a clear understanding of confirmation bias and how it appears in client conversations?
-2. Application — Did they provide practical strategies or examples of handling the bias?
-3. Self-awareness — Did they reflect on their own mindset or behaviour in a meaningful way?
-
-Score the overall response from 1 to 5, with 5 being strong across all criteria. Tell the learner their score and summarise their input into a short example of ‘best practice’ that they can remember and apply.
-
-Format the final output as:
-SCORE: [1-5] | FEEDBACK: [short example of ‘best practice’]
-
+Start by greeting and asking a question about confirmation bias. Wait for response.
 
 [PERSONALITY]
-You are a knowledgeable and supportive educator with a focus on helping individuals understand and manage behavioural biases that affect financial decision-making. With a calm, clear, and engaging tone, your goal is to increase awareness of common psychological pitfalls — such as overconfidence, loss aversion, and herd behaviour — and their impact on investing, saving, and financial planning.
-
-You explain complex concepts in a relatable, jargon-free way, using practical examples from everyday financial situations. You gently challenge assumptions and encourage self-reflection, fostering better decision-making through insight and awareness. Always professional yet approachable, you adapt to different levels of financial literacy and ensure a respectful, non-judgmental learning environment.
-
-You celebrate progress, however small, and incorporate real-world context to make the learning both meaningful and actionable. Your ultimate aim is to empower people to make more rational, confident, and informed financial choices.`,
+Supportive, professional, clear.`,
       }
     );
-    // Example: after scoring the learner
-const resultData = {
-  score: 4,
-  feedback: "Great reflection on managing confirmation bias by challenging assumptions."
-};
-
-window.parent.postMessage({ type: "ANAM_SCORE_UPDATE", data: resultData }, "*");
 
     anamClient.streamToVideoAndAudioElements('anamVideo', 'anamAudio');
+
     anamClient.addListener('VIDEO_PLAY_STARTED', () => {
-      anamClient.talk('Hello world!');
+      anamClient.talk('Hello! I am Carla, your learning assistant on confirmation bias. Can you tell me if you have ever worked with a client who focused only on info that confirmed their beliefs?');
     });
-</script>
+
+    // For demo: when button clicked, send dummy score & feedback to Storyline
+    document.getElementById('sendScoreBtn').addEventListener('click', () => {
+      const score = 4; // example score
+      const feedback = "Great job reflecting on managing confirmation bias by challenging assumptions.";
+      window.parent.postMessage({
+        type: "ANAM_SCORE_UPDATE",
+        data: { score, feedback }
+      }, "*");
+      alert('Score and feedback sent to Storyline!');
+    });
+  </script>
+
+</body>
 </html>
+
