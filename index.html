@@ -75,19 +75,20 @@
     <h1>Loading Carla...</h1>
   </div>
 
-  <!-- Main Content -->
-  <div id="content">
-    <video id="anamVideo" autoplay muted playsinline></video>
-    <audio id="anamAudio" autoplay></audio>
-  </div>
+<script>
+  // Function to get query parameter value
+  function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param) || "Learner";
+  }
 
-  <!-- Anam SDK + Carla Setup -->
-  <script src="https://unpkg.com/@anam-ai/js-sdk@2.0.0/dist/umd/anam.js"></script>
-  <script>
-    const { unsafe_createClientWithApiKey } = window.anam;
+  // Get the learner's name from the URL, or default to "Learner"
+  const learnerName = getQueryParam("learnerName");
 
-    const anamClient = unsafe_createClientWithApiKey(
-      'MjIwMWYwYjItZjE4Ny00OThhLTk0YjItZjdkMGNiNGUwZGRhOjVhUW1DejFRVk5LWkRnWExiSVNEN21qNzFLcU9icVA1Q2hteHA3ZzN3SW89',
+  // Now initialize Anam client and use learnerName in talk()
+  const { unsafe_createClientWithApiKey } = window.anam;
+
+  const anamClient = unsafe_createClientWithApiKey('MjIwMWYwYjItZjE4Ny00OThhLTk0YjItZjdkMGNiNGUwZGRhOjVhUW1DejFRVk5LWkRnWExiSVNEN21qNzFLcU9icVA1Q2hteHA3ZzN3SW89',
       {
         name: "Carla",
         avatarId: "195d733e-58a9-40bb-a049-ac344fa70b7f",
@@ -96,17 +97,21 @@
         systemPrompt: `[ROLE]
 You are a helpful, concise, and reliable tutor from England. Please guide the learner to reflect on how confirmation bias may have affected client conversations, decisions, or their own communication style — and help them uncover ways to manage it more effectively.
 
+[PERSONALIZATION]
+Always refer to the learner as ${learnerName} in your responses.
+
 [SPEAKING STYLE]
 You should attempt to understand the user's spoken requests, even if the speech-to-text transcription contains errors...
 (Truncated for clarity. Use full prompt in production.)
 `,
       }
     );
+    
 
     anamClient.streamToVideoAndAudioElements('anamVideo', 'anamAudio');
 
     anamClient.addListener('VIDEO_PLAY_STARTED', () => {
-      anamClient.talk("Hello. I'm Carla, and I'm here to help you explore confirmation bias.");
+      anamClient.talk("Hello${learnerName}. I'm Carla, and I'm here to help you explore confirmation bias.");
     });
 
     anamClient.addListener('TALK_ENDED', async () => {
