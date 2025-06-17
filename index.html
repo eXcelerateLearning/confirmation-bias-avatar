@@ -150,10 +150,22 @@ You are a knowledgeable and supportive educator focused on helping people unders
 
     anamClient.streamToVideoAndAudioElements('anamVideo', 'anamAudio');
 
-    anamClient.addListener('VIDEO_PLAY_STARTED', () => {
-      document.getElementById('anamVideo').style.boxShadow = "0 12px 36px rgba(0, 0, 0, 0.5)";
-      anamClient.talk(`Hello ${learnerName}, I'm Carla. I'm here to help you explore confirmation bias.`);
-    });
+anamClient.addListener('VIDEO_PLAY_STARTED', () => {
+  document.getElementById('anamVideo').style.boxShadow = "0 12px 36px rgba(0, 0, 0, 0.5)";
+  anamClient.talk(`Hello ${learnerName}, I'm Carla. I'm here to help you explore confirmation bias.`);
+
+  // ⏱️ Start 5-minute countdown here
+  setTimeout(() => {
+    anamClient.talk("Thanks, that’s all we have time for today. I really appreciated your reflections, and I hope you found this helpful. Goodbye for now.");
+
+    // Optional: send closure event to parent
+    window.opener?.postMessage({ type: "conversationEnded" }, "*");
+
+    // Optional: disable further input (if needed)
+    // You could hide or disable UI elements here if you’ve added them
+  }, 300000); // 5 minutes
+});
+
 
     anamClient.addListener('TALK_ENDED', async () => {
       const feedback = await anamClient.ask("Please give me a short score and feedback summary.");
