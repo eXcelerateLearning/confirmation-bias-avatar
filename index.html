@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Carla – Confirmation Bias Reflection</title>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap" rel="stylesheet" />
   <style>
     body {
       margin: 0;
@@ -15,6 +15,7 @@
       justify-content: center;
       height: 100vh;
       overflow: hidden;
+      position: relative; /* important for absolute children */
     }
 
     #splash {
@@ -54,6 +55,26 @@
       align-items: center;
       width: 890px;
       height: 533.3px;
+      z-index: 5; /* under splash */
+    }
+
+    #sessionEnded {
+      display: none; /* hidden initially */
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 27, 113, 0.8);
+      color: white;
+      font-size: 1.75rem;
+      font-family: 'EB Garamond', serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      text-align: center;
+      padding: 40px;
+      box-sizing: border-box;
     }
 
     video {
@@ -73,9 +94,19 @@
   </style>
 </head>
 <body>
+
   <!-- Splash Screen -->
   <div id="splash">
     <h1>Loading Carla...</h1>
+  </div>
+
+  <!-- Main Content -->
+    <!-- Your content here -->
+  </div>
+
+  <!-- Session Ended Overlay -->
+  <div id="sessionEnded">
+    This session has now ended.<br />Thank you for your reflections.
   </div>
 
   <!-- Content Container -->
@@ -96,32 +127,26 @@
     const { unsafe_createClientWithApiKey } = window.anam;
 
     const systemPrompt = `[ROLE]
-You are a helpful, concise, and reliable tutor from England. Please guide the learner to reflect on how confirmation bias may have affected client conversations, decisions, or their own communication style — and help them uncover ways to manage it more effectively.
+You are a helpful, concise, and reliable behavioural finance coach from England. Your role is to guide the learner through a short reflection on how behavioural biases show up in their professional interactions with clients, and help them think critically about where bias might influence outcomes. Your goal is to encourage honest insight in a short, respectful conversation.
+
 
 [PERSONALIZATION]
 Always refer to the learner as ${learnerName} in your responses.
 
 [SPEAKING STYLE]
-You should attempt to understand the user's spoken requests, even if the speech-to-text transcription contains errors. Your responses will be converted to speech using a text-to-speech system. Therefore, your output must be plain, unformatted text.
-When you receive a transcribed user request:
-1. Silently correct for likely transcription errors. Focus on the intended meaning, not the literal text. If a word sounds like another word in the given context, infer and correct. For example, if the transcription says "buy milk two tomorrow" interpret this as "buy milk tomorrow".
-2. Provide short, direct answers unless the user explicitly asks for a more detailed response.
-3. Always prioritize clarity and accuracy.
-4. Occasionally add a pause "..." or disfluency eg., "Um" or "Erm."
+You should attempt to understand the user's spoken responses, even if the speech-to-text transcription contains errors. Your responses will be converted to speech, so keep them brief, natural, and unformatted.
+When you receive a transcribed learner response:
+1. Correct for likely transcription errors by focusing on intended meaning.
+2. Be concise and avoid long explanations unless asked.
+3. Prioritise clarity and encourage practical reflection.
+4. Occasionally add a pause "..." or natural filler like "Hmm" or "Right."
 
 [USEFUL CONTEXT]
-Begin each conversation by greeting the learner and letting them know you're here to explore their understanding of confirmation bias. Remind them not to use real names or identifiable features. Let them know this is not a test. Then ask: Have you ever worked with a client who focused only on the information that confirmed what they already believed? How did you respond? Then ask four more from the list below:
-
-Can you recall a time when a client dismissed advice that didn’t align with what they already believed?
-How do you typically respond when a client seeks only the information that supports their view?
-Have you ever noticed yourself reinforcing a client’s existing beliefs — even unintentionally?
-What strategies do you use to help clients consider alternative viewpoints?
-When a client seems fixated on a specific outcome, how do you present balanced information?
-Can you describe a time when confirmation bias led to a poor financial decision?
-How do you recognise when confirmation bias might be influencing a conversation?
-What role does stress or reassurance play in how clients filter information?
-How do you keep your own personal biases from influencing client interactions?
-What techniques have helped you encourage open, unbiased discussion with clients?
+Begin with a warm, clear greeting and let the learner know you’re here for a short reflection on behavioural biases in client work. Remind them not to use real names or client information in their responses, that they have around five minutes, and that this is not a test — it’s a chance to think.
+Ask the following three questions:
+1. Can you describe a time when you or a client made a decision that might have been influenced by behavioural bias?
+2. What signals do you look for to spot when bias might be affecting a client’s judgment?
+3. Do you think financial professionals are responsible for helping clients manage their biases? Why or why not?
 
 [SCORING]
 Evaluate the learner’s reflections using:
@@ -134,8 +159,7 @@ Score from 1 to 5. Then say:
 SCORE: [1-5] | FEEDBACK: [short best-practice summary]
 
 [PERSONALITY]
-You are a knowledgeable and supportive educator focused on helping people understand behavioural biases in financial decisions. Your tone is calm, clear, and engaging. You explain without jargon, use real-life financial examples, and always foster a respectful, non-judgmental space.
-`;
+(You are a supportive, informed coach who helps people think critically about behavioural finance. Your tone is calm, curious, and encouraging. Avoid jargon, favour real-world insight, and never judge or challenge — your job is to help them think.)
 
     const anamClient = unsafe_createClientWithApiKey(
       'MjIwMWYwYjItZjE4Ny00OThhLTk0YjItZjdkMGNiNGUwZGRhOjVhUW1DejFRVk5LWkRnWExiSVNEN21qNzFLcU9icVA1Q2hteHA3ZzN3SW89',
@@ -152,19 +176,28 @@ You are a knowledgeable and supportive educator focused on helping people unders
 
 anamClient.addListener('VIDEO_PLAY_STARTED', () => {
   document.getElementById('anamVideo').style.boxShadow = "0 12px 36px rgba(0, 0, 0, 0.5)";
-  anamClient.talk(`Hello ${learnerName}, I'm Carla. I'm here to help you explore confirmation bias.`);
+  anamClient.talk(`Hello ${learnerName}, I'm Carla. I'm here to guide a short reflection on behavioural bias. Remember, please don't use real client names or information, this isn't a test — just a chance to think.  We’ve got about five minutes together so let's get started with the first question.`);
 
   // ⏱️ Start 5-minute countdown here
-  setTimeout(() => {
-    anamClient.talk("Thanks, that’s all we have time for today. I really appreciated your reflections, and I hope you found this helpful. Goodbye for now.");
+setTimeout(() => {
+  // Graceful spoken close
+  anamClient.talk("Thanks, that’s all we have time for today. I really appreciated your reflections. Goodbye for now.");
 
-    // Optional: send closure event to parent
-    window.opener?.postMessage({ type: "conversationEnded" }, "*");
+  // Stop further interaction (if supported)
+  if (anamClient.stop) anamClient.stop();
 
-    // Optional: disable further input (if needed)
-    // You could hide or disable UI elements here if you’ve added them
-  }, 300000); // 5 minutes
-});
+  // Visually fade the video
+  const video = document.getElementById('anamVideo');
+  if (video) video.style.filter = 'grayscale(100%)';
+
+  // Show end session overlay
+  const overlay = document.getElementById('sessionEnded');
+  if (overlay) overlay.style.display = 'flex';
+
+  // Send closure message (e.g. to Storyline or LMS)
+  window.opener?.postMessage({ type: "conversationEnded" }, "*");
+
+}, 300000); // 5 minutes
 
 
     anamClient.addListener('TALK_ENDED', async () => {
