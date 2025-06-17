@@ -58,24 +58,24 @@
       z-index: 5; /* under splash */
     }
 
-    #sessionEnded {
-      display: none; /* hidden initially */
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 27, 113, 0.8);
-      color: white;
-      font-size: 1.75rem;
-      font-family: 'EB Garamond', serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 20;
-      text-align: center;
-      padding: 40px;
-      box-sizing: border-box;
-    }
+  /* Hide session ended overlay by default */
+#sessionEnded {
+  display: none;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 27, 113, 0.8);
+  color: white;
+  font-size: 1.75rem;
+  font-family: 'EB Garamond', serif;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  text-align: center;
+  padding: 40px;
+  box-sizing: border-box;
+}
 
     video {
       width: 100%;
@@ -176,29 +176,27 @@ SCORE: [1-5] | FEEDBACK: [short best-practice summary]
 
 anamClient.addListener('VIDEO_PLAY_STARTED', () => {
   document.getElementById('anamVideo').style.boxShadow = "0 12px 36px rgba(0, 0, 0, 0.5)";
-  anamClient.talk(`Hello ${learnerName}, I'm Carla. I'm here to guide a short reflection on behavioural bias. Remember, please don't use real client names or information, this isn't a test — just a chance to think.  We’ve got about five minutes together so let's get started with the first question.`);
+  anamClient.talk(`Hello ${learnerName}, I'm Carla. I'm here to guide a short reflection on behavioural bias. Remember, please don’t use real client names or information, this isn't a test — just a chance to think.  We’ve got about five minutes together so let's get started with the first question.`);
 
   // ⏱️ Start 5-minute countdown here
-setTimeout(() => {
-  // Graceful spoken close
-  anamClient.talk("Thanks, that’s all we have time for today. I really appreciated your reflections. Goodbye for now.");
+  setTimeout(() => {
+    anamClient.talk("Thanks, that’s all we have time for today. I really appreciated your reflections. Goodbye for now.");
 
-  // Stop further interaction (if supported)
-  if (anamClient.stop) anamClient.stop();
+    // Stop further interaction if supported
+    if (anamClient.stop) anamClient.stop();
 
-  // Visually fade the video
-  const video = document.getElementById('anamVideo');
-  if (video) video.style.filter = 'grayscale(100%)';
+    // Visually fade the video
+    const video = document.getElementById('anamVideo');
+    if (video) video.style.filter = 'grayscale(100%)';
 
-  // Show end session overlay
-  const overlay = document.getElementById('sessionEnded');
-  if (overlay) overlay.style.display = 'flex';
+    // Show session ended overlay
+    const overlay = document.getElementById('sessionEnded');
+    if (overlay) overlay.style.display = 'flex';
 
-  // Send closure message (e.g. to Storyline or LMS)
-  window.opener?.postMessage({ type: "conversationEnded" }, "*");
-
-}, 300000); // 5 minutes
-
+    // Send closure message to parent if relevant
+    window.opener?.postMessage({ type: "conversationEnded" }, "*");
+  }, 300000); // 5 minutes
+});
 
     anamClient.addListener('TALK_ENDED', async () => {
       const feedback = await anamClient.ask("Please give me a short score and feedback summary.");
