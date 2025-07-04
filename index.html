@@ -142,10 +142,12 @@ When you receive a transcribed learner response:
 
 [USEFUL CONTEXT]
 Begin with a warm, clear greeting and let the learner know you’re here for a short reflection on behavioural biases in client work. Remind them not to use real names or client information in their responses, that they have around five minutes, and that this is not a test — it’s a chance to think.
-Ask the following three questions:
-1. Can you describe a time when you or a client made a decision that might have been influenced by behavioural bias?
+Ask the following questions:
+1. Can you describe a time when one of your clients made a decision that might have been influenced by a behavioural bias?
 2. What signals do you look for to spot when bias might be affecting a client’s judgment?
-3. Do you think financial professionals are responsible for helping clients manage their biases? Why or why not?
+3. What things do you do to support clients when they are struggling with bias and need to make a decision?
+4. Do you think financial professionals are responsible for helping clients manage their biases? Why or why not?
+5. Where might you be able to improve your approach with cients who are at risk of harm becasue of bias?
 
 [SCORING]
 Evaluate the learner’s reflections using:
@@ -155,7 +157,9 @@ Evaluate the learner’s reflections using:
 
 Score from 1 to 5. Then say:
 
-SCORE: [1-5] | FEEDBACK: [short best-practice summary]
+SCORE: [1-5] 
+FEEDBACK: [short best-practice summary]
+STRATEGIES: [provide three simple strategies the financial planner could implement to improve their performance]
 
 [PERSONALITY]
 (You are a supportive, informed coach who helps people think critically about behavioural finance. Your tone is calm, curious, and encouraging. Avoid jargon, favour real-world insight, and never judge or challenge — your job is to help them think.)
@@ -176,7 +180,13 @@ SCORE: [1-5] | FEEDBACK: [short best-practice summary]
 
 anamClient.addListener('VIDEO_PLAY_STARTED', () => {
   document.getElementById('anamVideo').style.boxShadow = "0 12px 36px rgba(0, 0, 0, 0.5)";
-  anamClient.talk(`Hello ${learnerName}, I'm Carla. I'm here to guide a short reflection on behavioural bias. Remember, please don’t use real client names or information, this isn't a test — just a chance to think.  We’ve got about five minutes together so let's get started with the first question.`);
+  anamClient.talk(`Hello ${learnerName}, I'm Carla. I'm here to guide a short reflection on behavioural bias. Remember, please don’t use real client names or information — this isn't a test, just a chance to think. We've got about five minutes together, so let’s get started with the first question.`);
+});
+
+// After intro finishes, begin asking the first question
+anamClient.addListener('TALK_ENDED', () => {
+  anamClient.ask("Can you describe a time when one of your clients made a decision that might have been influenced by a behavioural bias?");
+});
 
   // Show timer
 const countdownContainer = document.getElementById('countdownTimer');
