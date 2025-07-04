@@ -223,19 +223,31 @@ const countdownInterval = setInterval(() => {
 });
 
 anamClient.addListener('TALK_ENDED', async () => {
-  // Get feedback
-  const feedback = await anamClient.ask("Please give me a short score and feedback summary.");
-  window.opener?.postMessage({ type: "feedbackVar", feedback }, "*");
+  // Ask for feedback summary + score
+  const full = await anamClient.ask("Please give me a short score and feedback summary.");
+  const scoreMatch = full.match(/SCORE:\s?(\d)/);
+  const scoreVar = scoreMatch ? scoreMatch[1] : "";
+  const feedbackVar = full.split('| FEEDBACK:')[1]?.trim() || "";
+
+  // Ask for short reflection summary
+  const reflectionVar = await anamClient.ask("Please summarise the learner’s key points and reflections from our conversation in a few short sentences.");
+
+  // Post all three to Storyline
+  window.opener?.postMessage({
+    type: "feedbackBundle",
+    scoreVar,
+    feedbackVar,
+    reflectionVar
+  }, "*");
 
   // Stop session
   if (anamClient.stop) anamClient.stop();
   anamClient.detach();
 
-  // Hide countdown timer
+  // Hide timer
   const countdownContainer = document.getElementById('countdownTimer');
   if (countdownContainer) countdownContainer.style.display = 'none';
 });
-
 
     window.addEventListener("message", (event) => {
       if (event.data?.type === "launchData") {
