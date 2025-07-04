@@ -256,6 +256,23 @@ anamClient.addListener('TALK_ENDED', async () => {
       }
     });
   </script>
+    <!-- Countdown Timer -->
+  <div id="countdownTimer" style="
+    display: none;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(0, 27, 113, 0.9);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 1.25rem;
+    font-family: 'EB Garamond', serif;
+    z-index: 15;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  ">
+    <span id="timerText">5:00</span>
+  </div>
+
 </body>
 </html>
 
