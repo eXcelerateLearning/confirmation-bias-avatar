@@ -178,71 +178,72 @@ STRATEGIES: [provide three simple strategies the financial planner could impleme
 
     anamClient.streamToVideoAndAudioElements('anamVideo', 'anamAudio');
 
+let hasAskedFirstQuestion = false;
+let sessionEnded = false;
+    
 anamClient.addListener('VIDEO_PLAY_STARTED', () => {
   document.getElementById('anamVideo').style.boxShadow = "0 12px 36px rgba(0, 0, 0, 0.5)";
   anamClient.talk(`Hello ${learnerName}, I'm Carla. I'm here to guide a short reflection on behavioural bias. Remember, please don’t use real client names or information — this isn't a test, just a chance to think. We've got about five minutes together, so let’s get started with the first question.`);
-});
 
-// After intro finishes, begin asking the first question
-anamClient.addListener('TALK_ENDED', () => {
-  anamClient.ask("Can you describe a time when one of your clients made a decision that might have been influenced by a behavioural bias?");
-});
+  // ✅ Start countdown timer
+  const countdownContainer = document.getElementById('countdownTimer');
+  const timerText = document.getElementById('timerText');
+  let timeLeft = 300;
+  countdownContainer.style.display = 'block';
 
-  // Show timer
-const countdownContainer = document.getElementById('countdownTimer');
-const timerText = document.getElementById('timerText');
-let timeLeft = 300; // seconds
-countdownContainer.style.display = 'block';
+  const countdownInterval = setInterval(() => {
+    timeLeft--;
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerText.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
-// Countdown tick
-const countdownInterval = setInterval(() => {
-  timeLeft--;
+    if (timeLeft <= 0) {
+      clearInterval(countdownInterval);
+    }
+  }, 1000);
 
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
-  timerText.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
-  if (timeLeft <= 0) {
-    clearInterval(countdownInterval);
-  }
-}, 1000);
-  
-  // ⏱️ Start 5-minute countdown here
+  // ✅ Stop session after 5 minutes
   setTimeout(() => {
-  // Graceful closing message
-  anamClient.talk("Thanks, that’s all we have time for today. I really appreciated your reflections. Goodbye for now.");
+    sessionEnded = true;
 
-  // Optional visual cue
-  const video = document.getElementById('anamVideo');
-  if (video) video.style.filter = 'grayscale(100%)';
+    anamClient.talk("Thanks, that’s all we have time for today. I really appreciated your reflections. Goodbye for now.");
 
-  const overlay = document.getElementById('sessionEnded');
-  if (overlay) overlay.style.display = 'flex';
+    const video = document.getElementById('anamVideo');
+    if (video) video.style.filter = 'grayscale(100%)';
 
-  // Send closure message
-  window.opener?.postMessage({ type: "conversationEnded" }, "*");
+    const overlay = document.getElementById('sessionEnded');
+    if (overlay) overlay.style.display = 'flex';
 
-  // ✋ Full shutdown after Carla finishes talking
-  anamClient.addListener('TALK_ENDED', () => {
-    // 🛑 Stop the session and free up API usage
-    if (anamClient.stop) anamClient.stop(); // Stops interaction and listening
-    anamClient.detach(); // Cleanly removes the Anam instance (if supported)
-  });
-
-}, 300000); // 5 minutes
+      window.opener?.postMessage({ type: "conversationEnded" }, "*");
+  }, 300000); // 5 minutes
 });
 
 anamClient.addListener('TALK_ENDED', async () => {
-  // Ask for feedback summary + score
+  // Ask the first question after intro finishes
+  if (!hasAskedFirstQuestion) {
+    hasAskedFirstQuestion = true;
+    anamClient.ask("Can you describe a time when one of your clients made a decision that might have been influenced by a behavioural bias?");
+    return;
+  }
+
+  // Handle session end (from timeout)
+  if (sessionEnded) {
+    if (anamClient.stop) anamClient.stop();
+    anamClient.detach();
+
+    const countdownContainer = document.getElementById('countdownTimer');
+    if (countdownContainer) countdownContainer.style.display = 'none';
+    return;
+  }
+
+  // End of conversation — ask for score + feedback
   const full = await anamClient.ask("Please give me a short score and feedback summary.");
   const scoreMatch = full.match(/SCORE:\s?(\d)/);
   const scoreVar = scoreMatch ? scoreMatch[1] : "";
   const feedbackVar = full.split('| FEEDBACK:')[1]?.trim() || "";
 
-  // Ask for short reflection summary
   const reflectionVar = await anamClient.ask("Please summarise the learner’s key points and reflections from our conversation in a few short sentences.");
 
-  // Post all three to Storyline
   window.opener?.postMessage({
     type: "feedbackBundle",
     scoreVar,
@@ -250,13 +251,8 @@ anamClient.addListener('TALK_ENDED', async () => {
     reflectionVar
   }, "*");
 
-  // Stop session
   if (anamClient.stop) anamClient.stop();
   anamClient.detach();
-
-  // Hide timer
-  const countdownContainer = document.getElementById('countdownTimer');
-  if (countdownContainer) countdownContainer.style.display = 'none';
 });
 
     window.addEventListener("message", (event) => {
